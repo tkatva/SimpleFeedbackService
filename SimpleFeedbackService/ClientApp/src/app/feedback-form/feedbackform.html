@@ -1,0 +1,63 @@
+<div class="container">
+  <div class="alert alert-success" *ngIf="isSuccess$ | async" role="alert">
+    Thank you for your feedback
+  </div>
+  <div class="alert alert-danger" *ngIf="faulted$ | async" role="alert">
+    Oops! Something went wrong. Please try again later
+  </div>
+  <form name="feedbackform" (ngSubmit)="feedbackform.form.valid && saveFeedback()" #feedbackform="ngForm" novalidate>
+    <div class="slds-notify_container">
+      <ngl-notification *ngIf="showAlert" type="alert" severity="error" (nglNotificationClose)="onClose($event)" timeout="5000" class="slds-theme--alert-texture">
+        <h2>{{alertText}}</h2>
+      </ngl-notification>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        <ngl-form-element [error]="hasError ? error : null" class="slds-m-top--small">
+          <ng-template nglFormLabel><i>Feedback</i> <span *ngIf="required">(<b>required</b>!)</span></ng-template>
+          <textarea nglFormControl name="feedbackStr" #feedbackStr="ngModel" placeholder="Your feedback here" [(ngModel)]="editedFeedback.feedbackStr" required></textarea>
+
+        </ngl-form-element>
+        <div *ngIf="(feedbackStr.dirty || feedbackStr.touched) && feedbackStr.invalid">
+          <div *ngIf="feedbackStr.errors.required">
+            <span class="badge badge-warning">Feedback is required</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm">
+        <ngl-form-element label="Email" [error]="hasError ? error : null" class="slds-m-top--small">
+          <input nglFormControl name="feedbackGiverEmail" #email="ngModel" type="text" placeholder="Email" [(ngModel)]="editedFeedback.feedbackGiverEmail" required>
+        </ngl-form-element>
+        <div *ngIf="(email.dirty || email.touched) && email.invalid">
+          <div *ngIf="email.errors.required">
+            <span class="badge badge-warning">Email is required</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
+        <ngl-form-element label="Feedback type" [error]="hasError ? error : null" class="slds-m-top--small">
+          <select nglFormControl name="feedbackType" #feedbacktype="ngModel" class="slds-select" [(ngModel)]="editedFeedback.feedbackType" required>
+            <option selected [ngValue]="null">Select type</option>
+            <option *ngFor="let type of feedBackTypes$ | async as type">{{type?.clientFeedbackTypeStr}}</option>
+
+          </select>
+        </ngl-form-element>
+        <div *ngIf="(feedbacktype.dirty || feedbacktype.touched) && feedbacktype.invalid">
+          <div *ngIf="feedbacktype.errors.required">
+            <span class="badge badge-warning">Feedback type is required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-sm">
+        <button type="submit" [disabled]="!feedbackform.form.valid" nglButton="neutral">Give feedback</button>
+      </div>
+    </div>
+  </form>
+</div>

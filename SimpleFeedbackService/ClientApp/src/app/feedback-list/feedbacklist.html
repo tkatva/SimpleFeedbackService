@@ -1,0 +1,128 @@
+<div class="container">
+  <div class="alert alert-success" *ngIf="isSuccess$ | async" role="alert">
+    Comment saved
+  </div>
+  <div class="alert alert-danger" *ngIf="faulted$ | async" role="alert">
+    Oops! Something went wrong. Please try again later
+  </div>
+  <div class="row">
+    <div class="col">
+      <ngl-form-element label="Date from" [error]="hasError ? error : null" class="slds-m-top--small">
+        <input placeholder="Date from:"
+               nglFormControl
+               [(ngModel)]="queryDto.from"
+               [owlDateTimeTrigger]="dt1" [owlDateTime]="dt1">
+        <owl-date-time [pickerType]="'calendar'" #dt1></owl-date-time>
+      </ngl-form-element>
+    </div>
+    <div class="col">
+      <ngl-form-element label="Date to" [error]="hasError ? error : null" class="slds-m-top--small">
+        <input placeholder="Date to:"
+               nglFormControl
+               [(ngModel)]="queryDto.to"
+               [owlDateTimeTrigger]="to" [owlDateTime]="to">
+        <owl-date-time [pickerType]="'calendar'" #to></owl-date-time>
+      </ngl-form-element>
+    </div>
+    <div class="col">
+      <ngl-form-element label="Client app" [error]="hasError ? error : null" class="slds-m-top--small">
+        <select nglFormControl name="clientApp" #feedbacktype="ngModel" (ngModelChange)="onClientChange($event)" class="slds-select" [(ngModel)]="queryDto.clientToken" required>
+          <option selected [ngValue]="null">Select client app</option>
+          <option *ngFor="let app of clientApps$ | async as app" [ngValue]="app?.clientToken">{{app?.clientName}}</option>
+
+        </select>
+      </ngl-form-element>
+    </div>
+    <div class="col">
+      <ngl-form-element label="Feedback type" [error]="hasError ? error : null" class="slds-m-top--small">
+        <select nglFormControl name="feedbackType" #feedbacktype="ngModel" class="slds-select" [(ngModel)]="queryDto.feedbackType" required>
+          <option selected [ngValue]="null">Select type</option>
+          <option *ngFor="let type of feedBackTypes$ | async as type">{{type?.clientFeedbackTypeStr}}</option>
+
+        </select>
+      </ngl-form-element>
+    </div>
+    <div class="col">
+      <ngl-form-element label="Show handled" class="slds-m-top--small">
+        <input nglFormControl type="checkbox" class="form-check-input" [(ngModel)]="queryDto.showHandled">
+        
+        
+      </ngl-form-element>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="slds-m-top--small">
+        <button type="submit" (click)="doSearch()" nglFormControl nglButton="brand">Search</button>
+
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class="row" *ngIf="showComment">
+    <form name="commentForm" (ngSubmit)="feedbackformcommentFormform.valid" #commentForm="ngForm" novalidate>
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Feedback</label>
+            <textarea class="form-control" [(ngModel)]="selectedFeedback.feedbackStr" disabled [ngModelOptions]="{standalone: true}" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Comment</label>
+            <textarea class="form-control" [(ngModel)]="selectedFeedback.comment" [ngModelOptions]="{standalone: true}" rows="3"></textarea>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" [(ngModel)]="selectedFeedback.feedbackProcessed" [ngModelOptions]="{standalone: true}">
+            <label class="form-check-label" for="exampleCheck1">Feedback handled</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button type="button" (click)="saveComment()" nglButton="brand">Save</button>
+          <button type="button" (click)="cancel()" nglFormControl nglButton="neutral">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <br />
+  <div class="row">
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+
+          <th scope="col">Client app</th>
+          <th scope="col">Type</th>
+          <th scope="col">Date</th>
+          <th scope="col">Feedback</th>
+          <th scope="col">Email</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let feedback of feedbacks$ | async ">
+          <td>{{feedback.feedbackSource}}</td>
+          <td>{{feedback.feedbackType}}</td>
+          <td>{{feedback.feedbackDate | date: 'd.M.yyyy H:mm'}}</td>
+          <td>{{ (feedback.feedbackStr.length>10)? (feedback.feedbackStr | slice:0:10)+'..':(feedback.feedbackStr) }} </td>
+          <td>{{feedback.feedbackGiverEmail}}</td>
+          <td><button type="button" (click)="onRowClick(feedback)" nglFormControl nglButton="neutral">Show</button></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+
+

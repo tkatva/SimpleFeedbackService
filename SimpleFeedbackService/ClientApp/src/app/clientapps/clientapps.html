@@ -1,0 +1,61 @@
+<div class="container">
+
+  <div class="alert alert-success" *ngIf="isSuccess$ | async" role="alert">
+    {{ notificationMsg$ | async }}
+  </div>
+  <div class="alert alert-danger" *ngIf="faulted$ | async" role="alert">
+    Oops! Something went wrong. Please try again later
+  </div>
+
+  <button type="button" *ngIf="!showEdit" (click)="createNewClientApp()" nglButton="brand">New client app</button>
+  <br/>
+
+  <form *ngIf="showEdit" name="clientAppForm" #clientAppForm="ngForm" novalidate>
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="clientAppName">Client app name</label>
+          <input type="text" class="form-control" id="clientName" [(ngModel)]="selectedClientApp.clientName" [ngModelOptions]="{standalone: true}" placeholder="Client app name" required>
+        </div>
+        <div class="form-group">
+          <label for="clientToken">Client app token</label>
+          <input type="text" class="form-control" id="clientToken" [(ngModel)]="selectedClientApp.clientToken" [ngModelOptions]="{standalone: true}" placeholder="Client token" required>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col">
+       
+        <button type="button" [disabled]="!canSave()" (click)="saveClientApp()" nglButton="brand">Save</button>
+        <button type="button" [disabled]="!clientAppForm.form.valid" *ngIf="selectedClientApp.clientAppId !== undefined" (click)="removeClientApp()" nglButton="destructive">Remove</button>
+        <button type="button" (click)="cancel()" nglFormControl nglButton="neutral">Cancel</button>
+      </div>
+    </div>
+  </form>
+  <br />
+
+  <div class="row">
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+
+          <th scope="col">Client app name</th>
+          <th scope="col">Token</th>
+
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let client of clientApps$ | async ">
+          <td>{{client.clientName}}</td>
+          <td>{{client.clientToken}}</td>
+
+          <td><button type="button" (click)="editClientApp(client)" nglFormControl nglButton="neutral">Show</button></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>

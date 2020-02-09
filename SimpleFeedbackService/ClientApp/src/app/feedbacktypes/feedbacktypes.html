@@ -1,0 +1,97 @@
+<div class="container">
+
+  <div class="alert alert-success" *ngIf="isSuccess$ | async" role="alert">
+    {{ notificationMsg$ | async }}
+  </div>
+  <div class="alert alert-danger" *ngIf="faulted$ | async" role="alert">
+    Oops! Something went wrong. Please try again later
+  </div>
+  <div *ngIf="!showEdit">
+    <div class="row">
+      <div class="col">
+        <ngl-form-element label="Client app" [error]="hasError ? error : null" class="slds-m-top--small">
+          <select nglFormControl (change)="clientAppChanged()" name="clientApp" #feedbacktype="ngModel" class="slds-select" [(ngModel)]="selectedClient" required>
+            <option selected [ngValue]="null">Select client app</option>
+            <option *ngFor="let app of clientApps$ | async as app" [ngValue]="app">{{app?.clientName}}</option>
+
+          </select>
+        </ngl-form-element>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="slds-m-top--small">
+          <button type="submit" (click)="doSearch()" nglFormControl nglButton="brand">Search</button>
+
+        </div>
+      </div>
+      <div *ngIf="selectedClient" class="col">
+        <div class="slds-m-top--small">
+          <button type="submit" (click)="newFeedbackType()" nglFormControl nglButton="brand">New feedback type</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br/>
+ 
+  <form *ngIf="showEdit" form name="feedbacktypeform" (ngSubmit)="feedbacktypeform.form.valid && saveFeedback()" #feedbacktypeform="ngForm" novalidate>
+    <div class="row">
+      <div class="col-sm">
+        <ngl-form-element label="Feedback type name" [error]="hasError ? error : null" class="slds-m-top--small">
+          <input nglFormControl name="feedbackTypeName" #feedbackTypeName="ngModel" type="text" placeholder="Feedback type name" [(ngModel)]="selectedFeedbackType.clientFeedbackTypeStr" required>
+        </ngl-form-element>
+        <div *ngIf="(feedbackTypeName.dirty || feedbackTypeName.touched) && feedbackTypeName.invalid">
+          <div *ngIf="feedbackTypeName.errors.required">
+            <span class="badge badge-warning">Feedback type is required</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
+        <ngl-form-element label="Feedback type description" [error]="hasError ? error : null" class="slds-m-top--small">
+          <input nglFormControl name="feedbackTypeDesc" #feedbackTypeDesc="ngModel" type="text" placeholder="Feedback type description" [(ngModel)]="selectedFeedbackType.clientFeedbackTypeDesc">
+        </ngl-form-element>
+
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-sm">
+        <button type="submit" [disabled]="!feedbacktypeform.form.valid" nglButton="brand">Save</button>
+      </div>
+      <div class="col-sm">
+        <button type="button" *ngIf="selectedClient.clientAppId !== undefined" (click)="removeFeedback()" nglButton="destructive">Remove</button>
+      </div>
+      <div class="col-sm">
+        <button type="button" (click)="cancelEdit()" nglButton="neutral">Cancel</button>
+      </div>
+    </div>
+</form>
+  
+  <br />
+
+  <div class="row">
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+
+          <th scope="col">Feedback type</th>
+          <th scope="col">Description</th>
+
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let type of clientFeedbackTypes$ | async ">
+          <td>{{type.clientFeedbackTypeStr}}</td>
+          <td>{{type.clientFeedbackTypeDesc}}</td>
+
+          <td><button type="button" (click)="editFeedbacktype(type)" nglFormControl nglButton="neutral">Show</button></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
